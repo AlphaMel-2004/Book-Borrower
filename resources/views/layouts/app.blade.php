@@ -1,155 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Borrower System</title>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#4A90E2",
-                        secondary: "#FF9800",
-                        darkBg: "#1a202c",
-                        darkText: "#e2e8f0",
-                    }
-                }
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <style>
+            .gradient-bg {
+                background: linear-gradient(135deg, #10b981 0%, #059669 25%, #047857 50%, #065f46 75%, #064e3b 100%);
             }
-        }
-    </script>
-
-    <style>
-        body {
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #343a40;
-            padding: 20px;
-            transition: transform 0.3s ease-in-out;
-        }
-        .sidebar a {
-            color: white;
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-        .content {
-            margin-left: 270px;
-            transition: margin-left 0.3s;
-        }
-        .toggle-btn {
-            position: absolute;
-            top: 20px;
-            left: 270px;
-            cursor: pointer;
-            transition: left 0.3s;
-        }
-        .dark-mode {
-            background-color: #1a202c;
-            color: #e2e8f0;
-        }
-        .dark-mode .sidebar {
-            background-color: #111827;
-        }
-        .dark-mode .sidebar a:hover {
-            background-color: #374151;
-        }
-    </style>
-</head>
-<body class="{{ session('darkMode') === 'enabled' ? 'dark-mode' : '' }}">
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <h3 class="text-center text-warning">📚 BBS</h3>
-        <a href="{{ route('books.index') }}"><i class="bi bi-house-door"></i> Home</a>
-        <a href="{{ route('books.create') }}"><i class="bi bi-plus-circle"></i> Add Book</a>
-        <button id="darkModeToggle" class="btn btn-outline-light w-100 mt-3">
-            <i class="bi bi-moon"></i> Dark Mode
-        </button>
-    </div>
-
-    <!-- Toggle Sidebar Button -->
-    <button class="btn btn-dark toggle-btn" id="toggleSidebar">☰</button>
-
-    <!-- Main Content -->
-    <div class="content p-5" id="content">
-        @yield('content')
-    </div>
-
-    <!-- Footer -->
-    <footer class="text-center py-3 bg-dark text-white">
-        <p class="m-0">📖 Book Borrower System Designed By: Rumel &copy; {{ date('Y') }}</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Dark Mode & Sidebar Toggle Script -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const darkModeToggle = document.getElementById("darkModeToggle");
-            const body = document.body;
-            const sidebar = document.getElementById("sidebar");
-            const content = document.getElementById("content");
-            const toggleBtn = document.getElementById("toggleSidebar");
-
-            // Load dark mode preference
-            if (localStorage.getItem("darkMode") === "enabled") {
-                body.classList.add("dark-mode");
-                darkModeToggle.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
+            .glass-effect {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
             }
+            .shadow-soft {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            }
+            .hover-lift {
+                transition: all 0.3s ease;
+            }
+            .hover-lift:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            }
+        </style>
+    </head>
+    <body class="font-sans antialiased bg-gradient-to-br from-emerald-50 to-green-100 min-h-screen">
+        <div class="min-h-screen">
+            @include('layouts.navigation')
 
-            // Toggle dark mode
-            darkModeToggle.addEventListener("click", function () {
-                body.classList.toggle("dark-mode");
-                if (body.classList.contains("dark-mode")) {
-                    localStorage.setItem("darkMode", "enabled");
-                    darkModeToggle.innerHTML = '<i class="bi bi-sun"></i> Light Mode';
-                } else {
-                    localStorage.setItem("darkMode", "disabled");
-                    darkModeToggle.innerHTML = '<i class="bi bi-moon"></i> Dark Mode';
-                }
-            });
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="gradient-bg text-white shadow-soft">
+                    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                        <div class="glass-effect rounded-2xl p-6 shadow-soft">
+                            <h1 class="text-3xl font-bold tracking-tight text-white">
+                                {{ $header }}
+                            </h1>
+                            <p class="mt-2 text-emerald-100 text-lg">
+                                Welcome to your Book Borrower dashboard
+                            </p>
+                        </div>
+                    </div>
+                </header>
+            @endisset
 
-            // Toggle sidebar
-            let sidebarVisible = true;
-            toggleBtn.addEventListener("click", function () {
-                if (sidebarVisible) {
-                    sidebar.style.transform = "translateX(-100%)";
-                    content.style.marginLeft = "20px";
-                    toggleBtn.style.left = "20px";
-                } else {
-                    sidebar.style.transform = "translateX(0)";
-                    content.style.marginLeft = "270px";
-                    toggleBtn.style.left = "270px";
-                }
-                sidebarVisible = !sidebarVisible;
-            });
-        });
-    </script>
-
-</body>
+            <!-- Page Content -->
+            <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-2xl shadow-soft p-6 hover-lift">
+                    {{ $slot }}
+                </div>
+            </main>
+            
+            <!-- Footer -->
+            <footer class="gradient-bg text-white mt-16">
+                <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                    <div class="text-center">
+                        <p class="text-emerald-100">
+                            © {{ date('Y') }} {{ config('app.name', 'Book Borrower') }}. All rights reserved.
+                        </p>
+                        <p class="text-emerald-200 text-sm mt-2">
+                            Built with ❤️ using Laravel & Tailwind CSS
+                        </p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </body>
 </html>

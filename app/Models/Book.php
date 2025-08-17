@@ -9,11 +9,29 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Book extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = ['title', 'author', 'isbn', 'copies_available'];
 
-    use SoftDeletes;
+    protected $dates = ['deleted_at'];
 
-    protected $dates = ['deleted_at']; // Enables deleted_at field
+    public function borrowings()
+    {
+        return $this->hasMany(Borrowing::class);
+    }
+
+    public function requests()
+    {
+        return $this->hasMany(BookRequest::class);
+    }
+
+    public function getCurrentBorrowingsCount()
+    {
+        return $this->borrowings()->where('status', 'borrowed')->count();
+    }
+
+    public function getAvailableCopies()
+    {
+        return $this->copies_available - $this->getCurrentBorrowingsCount();
+    }
 }

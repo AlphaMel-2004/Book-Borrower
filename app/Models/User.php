@@ -19,8 +19,10 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
+        'is_admin',
     ];
 
     /**
@@ -43,6 +45,32 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    public function borrowings()
+    {
+        return $this->hasMany(Borrowing::class);
+    }
+
+    public function fines()
+    {
+        return $this->hasMany(Fine::class);
+    }
+
+    public function requests()
+    {
+        return $this->hasMany(BookRequest::class);
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(UserLog::class);
+    }
+
+    public function getUnpaidFinesTotal()
+    {
+        return $this->fines()->where('status', 'unpaid')->sum('amount');
     }
 }

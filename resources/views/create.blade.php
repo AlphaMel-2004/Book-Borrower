@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <div class="card shadow-lg p-4 bg-light dark:bg-dark mx-auto" style="max-width: 600px;">
+    <div class="card shadow-lg p-4 bg-light mx-auto" style="max-width: 600px;">
         <form action="{{ route('books.store') }}" method="POST">
             @csrf
 
